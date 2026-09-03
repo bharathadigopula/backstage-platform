@@ -18,8 +18,8 @@ The backend listens on `http://localhost:7007`, uses guest authentication, and s
 | Category    | Plugins                                                                         |
 | ----------- | ------------------------------------------------------------------------------- |
 | Application | App backend and proxy                                                           |
-| Identity    | Auth backend, guest provider, Microsoft provider                                |
-| Catalog     | Core catalog, GitHub, Microsoft Graph, scaffolder entity model, processing logs |
+| Identity    | Auth backend and guest provider                                                   |
+| Catalog     | Core catalog, GitHub, scaffolder entity model, processing logs                    |
 | Delivery    | Scaffolder, GitHub publish actions, notifications                               |
 | Content     | TechDocs                                                                        |
 | Discovery   | PostgreSQL search engine, catalog and TechDocs collators                        |
