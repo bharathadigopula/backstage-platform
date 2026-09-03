@@ -63,9 +63,6 @@ services:
           cpus: '0.50'
           memory: 2048M
     environment:
-      AUTH_MICROSOFT_CLIENT_ID_FILE: /run/secrets/microsoft_client_id
-      AUTH_MICROSOFT_CLIENT_SECRET_FILE: /run/secrets/microsoft_client_secret
-      AUTH_MICROSOFT_TENANT_ID_FILE: /run/secrets/microsoft_tenant_id
       BACKSTAGE_BACKEND_SECRET_FILE: /run/secrets/backend_secret
       BACKSTAGE_BASE_URL: ${BACKSTAGE_BASE_URL:?BACKSTAGE_BASE_URL is required}
       GITHUB_TOKEN_FILE: /run/secrets/github_token
@@ -96,9 +93,6 @@ services:
       - github_token
       - jenkins_api_token
       - jenkins_username
-      - microsoft_client_id
-      - microsoft_client_secret
-      - microsoft_tenant_id
       - postgres_password
     security_opt:
       - no-new-privileges:true
@@ -171,12 +165,6 @@ secrets:
     file: ./secrets/jenkins-api-token
   jenkins_username:
     file: ./secrets/jenkins-username
-  microsoft_client_id:
-    file: ./secrets/microsoft-client-id
-  microsoft_client_secret:
-    file: ./secrets/microsoft-client-secret
-  microsoft_tenant_id:
-    file: ./secrets/microsoft-tenant-id
   postgres_password:
     file: ./secrets/postgres-password
 

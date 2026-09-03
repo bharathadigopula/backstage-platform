@@ -39,7 +39,6 @@ backend.add(import('@backstage/plugin-techdocs-backend'));
 
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
-backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
 
 //==============================================================================
 // SOFTWARE CATALOG PLUGINS
@@ -50,7 +49,6 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend-module-github'));
-backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 
