@@ -33,8 +33,8 @@ fi
 # SECRET BUNDLE VALIDATION
 #==============================================================================
 
-sample_bundle='{"backend_secret":"01234567890123456789012345678901","github_token":"github-token-at-least-twenty","jenkins_api_token":"jenkins-token","jenkins_username":"backstage","microsoft_client_id":"00000000-0000-0000-0000-000000000000","microsoft_client_secret":"microsoft-secret","microsoft_tenant_id":"00000000-0000-0000-0000-000000000000","postgres_password":"postgres-password-at-least-sixteen"}'
-for key in backend_secret github_token jenkins_api_token jenkins_username microsoft_client_id microsoft_client_secret microsoft_tenant_id postgres_password; do
+sample_bundle='{"backend_secret":"01234567890123456789012345678901","github_token":"github-token-at-least-twenty","jenkins_api_token":"jenkins-token","jenkins_username":"backstage","postgres_password":"postgres-password-at-least-sixteen"}'
+for key in backend_secret github_token jenkins_api_token jenkins_username postgres_password; do
   jq -er --arg key "$key" '.[$key] | select(type == "string" and length > 0 and (contains("\n") | not))' <<< "$sample_bundle" >/dev/null
 done
 
@@ -46,9 +46,6 @@ if jq -e '
     "github_token",
     "jenkins_api_token",
     "jenkins_username",
-    "microsoft_client_id",
-    "microsoft_client_secret",
-    "microsoft_tenant_id",
     "postgres_password";
     . as $key | $ARGS.named.bundle[$key]
   )

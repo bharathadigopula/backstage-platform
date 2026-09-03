@@ -34,9 +34,6 @@ load_secret() {
 #==============================================================================
 
 for variable_name in \
-  AUTH_MICROSOFT_CLIENT_ID \
-  AUTH_MICROSOFT_CLIENT_SECRET \
-  AUTH_MICROSOFT_TENANT_ID \
   BACKSTAGE_BACKEND_SECRET \
   GITHUB_TOKEN \
   JENKINS_API_TOKEN \

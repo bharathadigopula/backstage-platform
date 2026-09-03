@@ -1,6 +1,6 @@
 # BharathCoudOps Developer Portal
 
-Backstage developer portal for the BharathCoudOps platform catalog, software templates, Jenkins visibility, Microsoft Entra ID authentication, Microsoft Graph organisation sync, and OCI-hosted production operations.
+Backstage developer portal for the BharathCoudOps platform catalog, software templates, Jenkins visibility, Cloudflare Access protection, guest identity, and OCI-hosted production operations.
 
 ## Supported Versions
 
@@ -13,7 +13,7 @@ Backstage developer portal for the BharathCoudOps platform catalog, software tem
 | PostgreSQL             | `17.11-bookworm`                           |
 | PostgreSQL exporter    | `0.20.1`                                   |
 | Node exporter          | `1.12.1`                                   |
-| Jenkins shared library | `1.4.0`                                    |
+| Jenkins shared library | `1.4.1`                                    |
 
 Backstage package versions are managed as a release set. Use `yarn backstage-cli versions:bump --release <version>` for future Backstage upgrades; do not upgrade React, React Router, TypeScript, or native database packages independently of Backstage compatibility.
 
@@ -31,7 +31,7 @@ The frontend is available at `http://localhost:3000` and the backend at `http://
 
 ## Production Configuration
 
-The production container loads [app-config.yaml](app-config.yaml) followed by [app-config.production.yaml](app-config.production.yaml). The production file overrides public URLs, PostgreSQL, Microsoft authentication, Microsoft Graph, and Jenkins.
+The production container loads [app-config.yaml](app-config.yaml) followed by [app-config.production.yaml](app-config.production.yaml). The production file overrides public URLs, PostgreSQL, Cloudflare-protected guest authentication, and Jenkins. Cloudflare Access must authenticate every request before it reaches Backstage because the production guest provider does not perform identity verification itself.
 
 | Variable                 | Default                           | Description                                               |
 | ------------------------ | --------------------------------- | --------------------------------------------------------- |
@@ -49,16 +49,13 @@ The production container loads [app-config.yaml](app-config.yaml) followed by [a
 
 Deployment reads one JSON object from OCI Vault and writes each value to a root-owned release secret file. Values must be non-empty single-line strings. No secret files are committed.
 
-| JSON key                  | Container variable             | Purpose                                                                        |
-| ------------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
-| `backend_secret`          | `BACKSTAGE_BACKEND_SECRET`     | Backstage service-to-service signing secret; use at least 32 random characters |
-| `github_token`            | `GITHUB_TOKEN`                 | GitHub catalog and scaffolder integration token                                |
-| `jenkins_api_token`       | `JENKINS_API_TOKEN`            | Jenkins API token                                                              |
-| `jenkins_username`        | `JENKINS_USERNAME`             | Jenkins service account                                                        |
-| `microsoft_client_id`     | `AUTH_MICROSOFT_CLIENT_ID`     | Entra application client ID                                                    |
-| `microsoft_client_secret` | `AUTH_MICROSOFT_CLIENT_SECRET` | Entra application client secret                                                |
-| `microsoft_tenant_id`     | `AUTH_MICROSOFT_TENANT_ID`     | Entra tenant ID                                                                |
-| `postgres_password`       | `POSTGRES_PASSWORD`            | PostgreSQL password; use at least 16 random characters                         |
+| JSON key            | Container variable         | Purpose                                                                        |
+| ------------------- | -------------------------- | ------------------------------------------------------------------------------ |
+| `backend_secret`    | `BACKSTAGE_BACKEND_SECRET` | Backstage service-to-service signing secret; use at least 32 random characters |
+| `github_token`      | `GITHUB_TOKEN`             | GitHub catalog and scaffolder integration token                                |
+| `jenkins_api_token` | `JENKINS_API_TOKEN`        | Jenkins API token                                                              |
+| `jenkins_username`  | `JENKINS_USERNAME`         | Jenkins service account                                                        |
+| `postgres_password` | `POSTGRES_PASSWORD`        | PostgreSQL password; use at least 16 random characters                         |
 
 ## Validation
 
@@ -107,16 +104,16 @@ Backups are retained for seven days and match `/var/backups/backstage-platform/b
 
 ## Jenkins Deployment
 
-Production deployment is intentionally blocked at present. In `bharath-oci-host-config`, `environments/prd/backstage.json` has `enabled: false`; the target host inventory is not available and the configured automation tag must exist before deployment.
+Production deployment targets the existing `k3s` host to avoid additional OCI compute and block-storage costs. Backstage runs as a resource-limited Compose stack on that host; Jenkins remains on `platform`, and the Cloudflare connector remains on `web-01`.
 
-When infrastructure, inventory, Vault data, and a published release tag are ready, use this order:
+After the Vault data and a published release tag are ready, use this order:
 
 1. Run `backstage-platform/validate/main` and require success.
-2. Update `bharath-oci-host-config/environments/prd/backstage.json` to the published `automation_ref`, add the real `backstage` host inventory, and set `enabled` to `true` through repository review.
+2. Update `bharath-oci-host-config/environments/prd/backstage.json` to the published `automation_ref` through repository review.
 3. Run `bharath-oci-host-config/validate/main` and require success.
 4. Run `bharath-oci-host-config/configure-backstage` with `ACTION=deploy`.
 
-The deployment pipeline itself performs remote `validate` and `dry-run` stages before `deploy`, then verifies the protected public route. Do not run `configure-backstage` while the configuration remains disabled, and do not redirect it to the Jenkins controller or a `k3s` worker.
+The deployment pipeline performs remote `validate` and `dry-run` stages before `deploy`, then verifies the protected public route. Do not run `configure-backstage` while the configuration is disabled or redirect it to the Jenkins controller.
 
 ## Repository Layout
 

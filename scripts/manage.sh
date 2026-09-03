@@ -80,9 +80,6 @@ deploy_stack() {
       "github_token",
       "jenkins_api_token",
       "jenkins_username",
-      "microsoft_client_id",
-      "microsoft_client_secret",
-      "microsoft_tenant_id",
       "postgres_password";
       . as $key | $ARGS.named.bundle[$key]
     )
@@ -97,7 +94,7 @@ deploy_stack() {
   install -d -m 0755 "$release_path"
   cp -a "$source_root/." "$release_path/"
   install -d -m 0700 "$release_path/secrets"
-  for mapping in backend_secret:backend-secret github_token:github-token jenkins_api_token:jenkins-api-token jenkins_username:jenkins-username microsoft_client_id:microsoft-client-id microsoft_client_secret:microsoft-client-secret microsoft_tenant_id:microsoft-tenant-id postgres_password:postgres-password; do
+  for mapping in backend_secret:backend-secret github_token:github-token jenkins_api_token:jenkins-api-token jenkins_username:jenkins-username postgres_password:postgres-password; do
     write_secret "${mapping%%:*}" "${mapping##*:}"
   done
   cat > "$release_path/.env" <<EOF
