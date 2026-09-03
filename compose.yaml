@@ -18,8 +18,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.75'
-          memory: 1536M
+          cpus: '0.25'
+          memory: 768M
     environment:
       POSTGRES_DB: backstage
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
@@ -60,8 +60,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.00'
-          memory: 2560M
+          cpus: '0.50'
+          memory: 2048M
     environment:
       AUTH_MICROSOFT_CLIENT_ID_FILE: /run/secrets/microsoft_client_id
       AUTH_MICROSOFT_CLIENT_SECRET_FILE: /run/secrets/microsoft_client_secret
@@ -72,6 +72,7 @@ services:
       JENKINS_API_TOKEN_FILE: /run/secrets/jenkins_api_token
       JENKINS_BASE_URL: ${JENKINS_BASE_URL:?JENKINS_BASE_URL is required}
       JENKINS_USERNAME_FILE: /run/secrets/jenkins_username
+      NODE_OPTIONS: --max-old-space-size=1536
       POSTGRES_HOST: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_PORT: '5432'
@@ -116,8 +117,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.15'
-          memory: 128M
+          cpus: '0.10'
+          memory: 96M
     environment:
       DATA_SOURCE_PASS_FILE: /run/secrets/postgres_password
       DATA_SOURCE_URI: postgres:5432/backstage?sslmode=disable
