@@ -1,59 +1,53 @@
-# example-backend
+# BharathCoudOps Backstage Backend
 
-This package is an EXAMPLE of a Backstage backend.
-
-The main purpose of this package is to provide a test bed for Backstage plugins
-that have a backend part. Feel free to experiment locally or within your fork by
-adding dependencies and routes to this backend, to try things out.
-
-Our goal is to eventually amend the create-app flow of the CLI, such that a
-production ready version of a backend skeleton is made alongside the frontend
-app. Until then, feel free to experiment here!
+Production Backstage backend for the BharathCoudOps developer portal. Plugin registration is centralised in `src/index.ts`; runtime settings come from the root `app-config.yaml` and `app-config.production.yaml` files.
 
 ## Development
 
-To run the example backend, first go to the project root and run
+From the repository root:
 
 ```bash
-yarn install
+yarn install --immutable
+yarn workspace backend start
 ```
 
-You should only need to do this once.
+The backend listens on `http://localhost:7007`, uses guest authentication, and stores local development data in an in-memory SQLite database. Put uncommitted overrides in `app-config.local.yaml`.
 
-After that, go to the `packages/backend` directory and run
+## Registered Plugins
+
+| Category    | Plugins                                                                         |
+| ----------- | ------------------------------------------------------------------------------- |
+| Application | App backend and proxy                                                           |
+| Identity    | Auth backend, guest provider, Microsoft provider                                |
+| Catalog     | Core catalog, GitHub, Microsoft Graph, scaffolder entity model, processing logs |
+| Delivery    | Scaffolder, GitHub publish actions, notifications                               |
+| Content     | TechDocs                                                                        |
+| Discovery   | PostgreSQL search engine, catalog and TechDocs collators                        |
+| Operations  | Jenkins and Kubernetes                                                          |
+| Platform    | Permissions, user settings, notifications, signals, MCP Actions                 |
+
+## Production Image
+
+Build from the repository root so all workspace packages, configurations, catalog entities, and templates are available:
 
 ```bash
-yarn start
+yarn workspace backend build
+yarn workspace backend build-image
 ```
 
-If you want to override any configuration locally, for example adding any secrets,
-you can do so in `app-config.local.yaml`.
+The image runs as the unprivileged `node` user, loads secrets from Docker secret files through `scripts/entrypoint.sh`, uses a read-only root filesystem, and exposes readiness at `/.backstage/health/v1/readiness`.
 
-The backend starts up on port 7007 per default.
+## Validation
 
-## Populating The Catalog
-
-If you want to use the catalog functionality, you need to add so called
-locations to the backend. These are places where the backend can find some
-entity descriptor data to consume and serve. For more information, see
-[Software Catalog Overview - Adding Components to the Catalog](https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog).
-
-To get started quickly, this template already includes some statically configured example locations
-in `app-config.yaml` under `catalog.locations`. You can remove and replace these locations as you
-like, and also override them for local development in `app-config.local.yaml`.
-
-## Authentication
-
-We chose [Passport](http://www.passportjs.org/) as authentication platform due
-to its comprehensive set of supported authentication
-[strategies](http://www.passportjs.org/packages/).
-
-Read more about the
-[auth-backend](https://github.com/backstage/backstage/blob/master/plugins/auth-backend/README.md)
-and
-[how to add a new provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
+```bash
+yarn tsc
+yarn workspace backend lint
+yarn workspace backend test --watch=false
+yarn workspace backend build
+```
 
 ## Documentation
 
-- [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
 - [Backstage Documentation](https://backstage.io/docs)
+- [Backend System](https://backstage.io/docs/backend-system/)
+- [Configuration](https://backstage.io/docs/conf/)

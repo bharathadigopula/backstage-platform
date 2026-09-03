@@ -1,3 +1,7 @@
+//==============================================================================
+// SIDEBAR LOGO COMPONENT
+//==============================================================================
+
 import {
   Link,
   sidebarConfig,
@@ -6,6 +10,10 @@ import {
 import { makeStyles } from '@material-ui/core';
 import { LogoFull } from './LogoFull';
 import { LogoIcon } from './LogoIcon';
+
+//==============================================================================
+// SIDEBAR LOGO STYLES
+//==============================================================================
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -21,6 +29,10 @@ const useSidebarLogoStyles = makeStyles({
     marginLeft: 24,
   },
 });
+
+//==============================================================================
+// RESPONSIVE SIDEBAR LOGO
+//==============================================================================
 
 export const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();

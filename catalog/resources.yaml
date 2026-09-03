@@ -1,0 +1,75 @@
+#==============================================================================
+# OCI PRODUCTION ENVIRONMENT
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: oci-production
+  title: OCI Production Environment
+  annotations:
+    cloud.bharathcoudops.dev/provider: OCI
+    cloud.bharathcoudops.dev/environment: Production
+    cloud.bharathcoudops.dev/region: uk-london-1
+spec:
+  type: environment
+  lifecycle: production
+  owner: group:default/platform-engineering
+  system: platform-automation
+---
+#==============================================================================
+# PLATFORM HOST SERVICE
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: platform-host
+  title: Platform Host
+  annotations:
+    cloud.bharathcoudops.dev/provider: OCI
+    cloud.bharathcoudops.dev/environment: Production
+    cloud.bharathcoudops.dev/region: uk-london-1
+spec:
+  type: platform-service
+  lifecycle: production
+  owner: group:default/platform-engineering
+  system: platform-automation
+---
+#==============================================================================
+# JENKINS CONTROLLER SERVICE
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: jenkins-controller
+  title: Jenkins Controller
+  annotations:
+    cloud.bharathcoudops.dev/provider: OCI
+    cloud.bharathcoudops.dev/environment: Production
+    cloud.bharathcoudops.dev/region: uk-london-1
+spec:
+  type: platform-service
+  lifecycle: production
+  owner: group:default/platform-engineering
+  system: platform-automation
+---
+#==============================================================================
+# MONITORING STACK SERVICE
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: monitoring-stack
+  title: Monitoring Stack
+  annotations:
+    cloud.bharathcoudops.dev/provider: OCI
+    cloud.bharathcoudops.dev/environment: Production
+    cloud.bharathcoudops.dev/region: uk-london-1
+spec:
+  type: platform-service
+  lifecycle: production
+  owner: group:default/platform-engineering
+  system: platform-automation

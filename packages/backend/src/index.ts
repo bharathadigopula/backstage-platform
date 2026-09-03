@@ -1,72 +1,104 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+//==============================================================================
+// BACKSTAGE BACKEND INITIALIZATION
+//==============================================================================
 
 import { createBackend } from '@backstage/backend-defaults';
 
+//==============================================================================
+// BACKEND APPLICATION
+//==============================================================================
+
 const backend = createBackend();
+
+//==============================================================================
+// APPLICATION AND PROXY PLUGINS
+//==============================================================================
 
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
 
-// scaffolder plugin
+//==============================================================================
+// SOFTWARE SCAFFOLDER PLUGINS
+//==============================================================================
+
 backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
 
-// techdocs plugin
+//==============================================================================
+// TECHDOCS PLUGIN
+//==============================================================================
+
 backend.add(import('@backstage/plugin-techdocs-backend'));
 
-// auth plugin
-backend.add(import('@backstage/plugin-auth-backend'));
-// See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
-backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
-// See https://backstage.io/docs/auth/guest/provider
+//==============================================================================
+// AUTHENTICATION PLUGINS
+//==============================================================================
 
-// catalog plugin
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+backend.add(import('@backstage/plugin-auth-backend-module-microsoft-provider'));
+
+//==============================================================================
+// SOFTWARE CATALOG PLUGINS
+//==============================================================================
+
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
+backend.add(import('@backstage/plugin-catalog-backend-module-github'));
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph'));
 
-// See https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 
-// permission plugin
+//==============================================================================
+// PERMISSION PLUGINS
+//==============================================================================
+
 backend.add(import('@backstage/plugin-permission-backend'));
-// See https://backstage.io/docs/permissions/getting-started for how to create your own permission policy
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
 
-// search plugin
+//==============================================================================
+// SEARCH PLUGINS
+//==============================================================================
+
 backend.add(import('@backstage/plugin-search-backend'));
-
-// search engine
-// See https://backstage.io/docs/features/search/search-engines
 backend.add(import('@backstage/plugin-search-backend-module-pg'));
-
-// search collators
 backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 
-// kubernetes plugin
-backend.add(import('@backstage/plugin-kubernetes-backend'));
+//==============================================================================
+// JENKINS PLUGIN
+//==============================================================================
 
-// user settings plugin
+backend.add(import('@backstage-community/plugin-jenkins-backend'));
+
+//==============================================================================
+// USER SETTINGS PLUGIN
+//==============================================================================
+
 backend.add(import('@backstage/plugin-user-settings-backend'));
 
-// notifications and signals plugins
+//==============================================================================
+// NOTIFICATION AND SIGNAL PLUGINS
+//==============================================================================
+
 backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 
-// mcp actions plugin
+//==============================================================================
+// MCP ACTIONS PLUGIN
+//==============================================================================
+
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+//==============================================================================
+// BACKEND STARTUP
+//==============================================================================
 
 backend.start();

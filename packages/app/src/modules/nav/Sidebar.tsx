@@ -1,3 +1,7 @@
+//==============================================================================
+// APPLICATION SIDEBAR NAVIGATION
+//==============================================================================
+
 import {
   Sidebar,
   SidebarDivider,
@@ -13,6 +17,15 @@ import SearchIcon from '@material-ui/icons/Search';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { UserSettingsSignInAvatar } from '@backstage/plugin-user-settings';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+import CloudQueueIcon from '@material-ui/icons/CloudQueue';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import HowToVoteIcon from '@material-ui/icons/HowToVote';
+import SettingsInputComponentIcon from '@material-ui/icons/SettingsInputComponent';
+
+//==============================================================================
+// SIDEBAR CONTENT BLUEPRINT
+//==============================================================================
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
@@ -21,9 +34,17 @@ export const SidebarContent = NavContentBlueprint.make({
         <SidebarItem icon={() => item.icon} to={item.href} text={item.title} />
       ));
 
-      // Skipped items
-      nav.take('page:search'); // Using search modal instead
-      nav.take('page:notifications'); // Using NotificationsSidebarItem manually instead
+      //==============================================================================
+      // CUSTOM NAVIGATION ITEM FILTERING
+      //==============================================================================
+
+      nav.take('page:search');
+      nav.take('page:notifications');
+      nav.take('page:platform/cloud');
+      nav.take('page:platform/environments');
+      nav.take('page:platform/sandboxes');
+      nav.take('page:platform/approvals');
+      nav.take('page:platform/operations');
 
       return (
         <Sidebar>
@@ -36,6 +57,27 @@ export const SidebarContent = NavContentBlueprint.make({
             {nav.take('page:home')}
             {nav.take('page:catalog')}
             {nav.take('page:scaffolder')}
+            <SidebarItem icon={CloudQueueIcon} to="/cloud" text="Cloud" />
+            <SidebarItem
+              icon={AccountTreeIcon}
+              to="/environments"
+              text="Environments"
+            />
+            <SidebarItem
+              icon={HourglassEmptyIcon}
+              to="/sandboxes"
+              text="Sandboxes"
+            />
+            <SidebarItem
+              icon={HowToVoteIcon}
+              to="/approvals"
+              text="Approvals"
+            />
+            <SidebarItem
+              icon={SettingsInputComponentIcon}
+              to="/operations"
+              text="Operations"
+            />
             <SidebarDivider />
             <SidebarScrollWrapper>
               {nav.rest({ sortBy: 'title' })}

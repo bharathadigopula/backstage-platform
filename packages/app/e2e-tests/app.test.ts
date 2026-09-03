@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
+//==============================================================================
+// BACKSTAGE APPLICATION END-TO-END TESTS
+//==============================================================================
+
 import { test, expect } from '@playwright/test';
+
+//==============================================================================
+// AUTHENTICATED NAVIGATION TEST
+//==============================================================================
 
 test('App should render the welcome page', async ({ page }) => {
   await page.goto('/');

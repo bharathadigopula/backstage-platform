@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+#==============================================================================
+# PINNED DOCKER ENGINE INSTALLATION
+#==============================================================================
+
+#==============================================================================
+# SHELL SAFETY
+#==============================================================================
+
+set -euo pipefail
+
+#==============================================================================
+# INSTALLATION INPUTS
+#==============================================================================
+
+action="${1:-validate}"
+containerd_version="${CONTAINERD_VERSION:-2.3.4-1~ubuntu.24.04~noble}"
+buildx_version="${DOCKER_BUILDX_VERSION:-0.36.1-1~ubuntu.24.04~noble}"
+compose_version="${DOCKER_COMPOSE_VERSION:-5.5.0-1~ubuntu.24.04~noble}"
+engine_version="${DOCKER_ENGINE_VERSION:-5:29.7.2-1~ubuntu.24.04~noble}"
+
+#==============================================================================
+# PLATFORM AND ACTION VALIDATION
+#==============================================================================
+
+[[ "$action" =~ ^(validate|dry-run|deploy)$ ]] || { printf 'Invalid Docker action.\n' >&2; exit 2; }
+. /etc/os-release
+[[ "$ID" == "ubuntu" && "$VERSION_CODENAME" == "noble" ]] || { printf 'Ubuntu 24.04 is required.\n' >&2; exit 1; }
+if [[ "$action" == "validate" ]]; then printf 'docker_install_validation=ready\n'; exit 0; fi
+if [[ "$action" == "dry-run" ]]; then printf 'docker_install_dry_run=ready\n'; exit 0; fi
+(( EUID == 0 )) || { printf 'Root is required.\n' >&2; exit 1; }
+
+#==============================================================================
+# DOCKER PACKAGE REPOSITORY
+#==============================================================================
+
+install -d -m 0755 /etc/apt/keyrings
+curl --fail --location --silent --show-error https://download.docker.com/linux/ubuntu/gpg --output /etc/apt/keyrings/docker.asc
+chmod 0644 /etc/apt/keyrings/docker.asc
+architecture=$(dpkg --print-architecture)
+printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu %s stable\n' "$architecture" "$VERSION_CODENAME" > /etc/apt/sources.list.d/docker.list
+
+#==============================================================================
+# PINNED PACKAGE INSTALLATION
+#==============================================================================
+
+apt-get update >/dev/null
+DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet \
+  "docker-ce=$engine_version" "docker-ce-cli=$engine_version" \
+  "containerd.io=$containerd_version" "docker-buildx-plugin=$buildx_version" \
+  "docker-compose-plugin=$compose_version" >/dev/null
+
+#==============================================================================
+# SERVICE ACTIVATION AND VERIFICATION
+#==============================================================================
+
+systemctl enable --now docker
+docker version >/dev/null
+docker compose version >/dev/null
+printf 'docker_install=ready\n'

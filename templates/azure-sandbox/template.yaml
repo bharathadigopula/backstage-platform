@@ -1,0 +1,94 @@
+#==============================================================================
+# AZURE SANDBOX REQUEST TEMPLATE
+#==============================================================================
+
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: request-azure-sandbox
+  title: Request Azure Sandbox
+  tags: [azure, sandbox, terraform]
+spec:
+  owner: group:default/platform-engineering
+  type: environment
+
+  #============================================================================
+  # REQUEST PARAMETERS
+  #============================================================================
+
+  parameters:
+    - title: Sandbox
+      required: [name, owner, primaryRegion, ttlDays, repository]
+      properties:
+        name:
+          title: Sandbox name
+          type: string
+          pattern: '^[a-z][a-z0-9-]{2,30}$'
+        owner:
+          title: Owner
+          type: string
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [Group, User]
+        primaryRegion:
+          title: Primary region
+          type: string
+          enum: [uksouth, ukwest, northeurope, westeurope]
+        secondaryRegion:
+          title: Recovery region
+          type: string
+          enum: [none, uksouth, ukwest, northeurope, westeurope]
+          default: none
+        ttlDays:
+          title: Lease duration in days
+          type: integer
+          minimum: 1
+          maximum: 30
+          default: 7
+        costCenter:
+          title: Cost center
+          type: string
+        repository:
+          title: Approved infrastructure repository
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts: [github.com]
+            allowedOwners: [bharathadigopula]
+
+  #============================================================================
+  # APPROVAL WORKFLOW
+  #============================================================================
+
+  steps:
+    - id: renderRequest
+      name: Render request
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: ${{ parameters.name }}
+          owner: ${{ parameters.owner }}
+          primaryRegion: ${{ parameters.primaryRegion }}
+          secondaryRegion: ${{ parameters.secondaryRegion }}
+          ttlDays: ${{ parameters.ttlDays }}
+          costCenter: ${{ parameters.costCenter }}
+    - id: createPullRequest
+      name: Create approval pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ parameters.repository }}
+        branchName: backstage/sandbox-${{ parameters.name }}
+        title: 'feat: request Azure sandbox ${{ parameters.name }}'
+        description: 'Backstage sandbox request requiring repository approval and Jenkins validation.'
+        targetPath: backstage/requests/sandboxes/${{ parameters.name }}
+
+  #============================================================================
+  # TEMPLATE OUTPUT
+  #============================================================================
+
+  output:
+    links:
+      - title: Approval pull request
+        url: ${{ steps.createPullRequest.output.remoteUrl }}

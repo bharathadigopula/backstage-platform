@@ -1,0 +1,76 @@
+#==============================================================================
+# SANDBOX LEASE EXTENSION TEMPLATE
+#==============================================================================
+
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: extend-sandbox-lease
+  title: Extend Sandbox Lease
+  tags: [sandbox, lifecycle, approval]
+spec:
+  owner: group:default/platform-engineering
+  type: environment
+
+  #============================================================================
+  # EXTENSION PARAMETERS
+  #============================================================================
+
+  parameters:
+    - title: Extension
+      required: [sandbox, additionalDays, reason, repository]
+      properties:
+        sandbox:
+          title: Sandbox name
+          type: string
+          pattern: '^[a-z][a-z0-9-]{2,30}$'
+        additionalDays:
+          title: Additional days
+          type: integer
+          minimum: 1
+          maximum: 30
+          default: 7
+        reason:
+          title: Reason
+          type: string
+          minLength: 10
+        repository:
+          title: Infrastructure repository
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts: [github.com]
+            allowedOwners: [bharathadigopula]
+
+  #============================================================================
+  # APPROVAL WORKFLOW
+  #============================================================================
+
+  steps:
+    - id: renderRequest
+      name: Render extension request
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          sandbox: ${{ parameters.sandbox }}
+          additionalDays: ${{ parameters.additionalDays }}
+          reason: ${{ parameters.reason }}
+    - id: createPullRequest
+      name: Create approval pull request
+      action: publish:github:pull-request
+      input:
+        repoUrl: ${{ parameters.repository }}
+        branchName: backstage/extend-${{ parameters.sandbox }}
+        title: 'chore: extend sandbox ${{ parameters.sandbox }}'
+        description: 'Backstage lease extension requiring repository approval and Jenkins validation.'
+        targetPath: backstage/requests/extensions/${{ parameters.sandbox }}
+
+  #============================================================================
+  # TEMPLATE OUTPUT
+  #============================================================================
+
+  output:
+    links:
+      - title: Approval pull request
+        url: ${{ steps.createPullRequest.output.remoteUrl }}

@@ -1,0 +1,13 @@
+#==============================================================================
+# SCAFFOLDER TEMPLATE LOCATIONS
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: bharathcoudops-platform-templates
+spec:
+  type: file
+  targets:
+    - ./azure-sandbox/template.yaml
+    - ./extend-sandbox/template.yaml

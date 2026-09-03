@@ -1,1 +1,12 @@
-module.exports = require('@backstage/cli/config/eslint-factory')(__dirname);
+//==============================================================================
+// BACKSTAGE BACKEND ESLINT CONFIGURATION
+//==============================================================================
+
+const config = require('@backstage/cli/config/eslint-factory')(__dirname);
+
+config.rules = {
+  ...config.rules,
+  'spaced-comment': 'off',
+};
+
+module.exports = config;

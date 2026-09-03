@@ -1,0 +1,187 @@
+#==============================================================================
+# BACKSTAGE PRODUCTION COMPOSE STACK
+#==============================================================================
+
+name: backstage-platform
+
+#==============================================================================
+# SERVICE DEFINITIONS
+#==============================================================================
+
+services:
+  #============================================================================
+  # POSTGRESQL DATABASE
+  #============================================================================
+
+  postgres:
+    image: postgres:17.11-bookworm
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 1536M
+    environment:
+      POSTGRES_DB: backstage
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_USER: backstage
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U backstage -d backstage']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  #============================================================================
+  # BACKSTAGE APPLICATION
+  #============================================================================
+
+  backstage:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    image: backstage-platform:${BACKSTAGE_VERSION:?BACKSTAGE_VERSION is required}
+    command:
+      - node
+      - packages/backend
+      - --config
+      - app-config.yaml
+      - --config
+      - app-config.production.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 2560M
+    environment:
+      AUTH_MICROSOFT_CLIENT_ID_FILE: /run/secrets/microsoft_client_id
+      AUTH_MICROSOFT_CLIENT_SECRET_FILE: /run/secrets/microsoft_client_secret
+      AUTH_MICROSOFT_TENANT_ID_FILE: /run/secrets/microsoft_tenant_id
+      BACKSTAGE_BACKEND_SECRET_FILE: /run/secrets/backend_secret
+      BACKSTAGE_BASE_URL: ${BACKSTAGE_BASE_URL:?BACKSTAGE_BASE_URL is required}
+      GITHUB_TOKEN_FILE: /run/secrets/github_token
+      JENKINS_API_TOKEN_FILE: /run/secrets/jenkins_api_token
+      JENKINS_BASE_URL: ${JENKINS_BASE_URL:?JENKINS_BASE_URL is required}
+      JENKINS_USERNAME_FILE: /run/secrets/jenkins_username
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: backstage
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://localhost:7007/.backstage/health/v1/readiness').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 15s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
+    ports:
+      - ${BACKSTAGE_BIND_ADDRESS:?BACKSTAGE_BIND_ADDRESS is required}:7007:7007
+    read_only: true
+    restart: unless-stopped
+    secrets:
+      - backend_secret
+      - github_token
+      - jenkins_api_token
+      - jenkins_username
+      - microsoft_client_id
+      - microsoft_client_secret
+      - microsoft_tenant_id
+      - postgres_password
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=512M,mode=1777
+
+  #============================================================================
+  # POSTGRESQL METRICS EXPORTER
+  #============================================================================
+
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: 128M
+    environment:
+      DATA_SOURCE_PASS_FILE: /run/secrets/postgres_password
+      DATA_SOURCE_URI: postgres:5432/backstage?sslmode=disable
+      DATA_SOURCE_USER: backstage
+    ports:
+      - ${BACKSTAGE_BIND_ADDRESS:?BACKSTAGE_BIND_ADDRESS is required}:9187:9187
+    read_only: true
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    security_opt:
+      - no-new-privileges:true
+    user: '1000:1000'
+
+  #============================================================================
+  # BACKUP METRICS EXPORTER
+  #============================================================================
+
+  backup-exporter:
+    image: prom/node-exporter:v1.12.1
+    command:
+      - --collector.disable-defaults
+      - --collector.textfile
+      - --collector.textfile.directory=/textfile
+      - --web.listen-address=:9101
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 64M
+    ports:
+      - ${BACKSTAGE_BIND_ADDRESS:?BACKSTAGE_BIND_ADDRESS is required}:9101:9101
+    read_only: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ${BACKSTAGE_BACKUP_ROOT:-/var/backups/backstage-platform}/metrics:/textfile:ro
+
+#==============================================================================
+# RUNTIME SECRET FILES
+#==============================================================================
+
+secrets:
+  backend_secret:
+    file: ./secrets/backend-secret
+  github_token:
+    file: ./secrets/github-token
+  jenkins_api_token:
+    file: ./secrets/jenkins-api-token
+  jenkins_username:
+    file: ./secrets/jenkins-username
+  microsoft_client_id:
+    file: ./secrets/microsoft-client-id
+  microsoft_client_secret:
+    file: ./secrets/microsoft-client-secret
+  microsoft_tenant_id:
+    file: ./secrets/microsoft-tenant-id
+  postgres_password:
+    file: ./secrets/postgres-password
+
+#==============================================================================
+# PERSISTENT DATA VOLUMES
+#==============================================================================
+
+volumes:
+  postgres-data:

@@ -1,0 +1,12 @@
+#==============================================================================
+# SANDBOX LEASE EXTENSION REQUEST
+#==============================================================================
+
+apiVersion: platform.bharathcoudops.dev/v1alpha1
+kind: SandboxExtensionRequest
+metadata:
+  name: ${{ values.sandbox }}
+spec:
+  additionalDays: ${{ values.additionalDays }}
+  reason: ${{ values.reason }}
+  approvalPolicy: repository-review

@@ -1,5 +1,10 @@
+#==============================================================================
+# EXAMPLE NODEJS SERVICE TEMPLATE
+#==============================================================================
+
+# yaml-language-server: $schema=https://json.schemastore.org/catalog-info.json
+
 apiVersion: scaffolder.backstage.io/v1beta3
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
   name: example-nodejs-template
@@ -9,8 +14,10 @@ spec:
   owner: user:guest
   type: service
 
-  # These parameters are used to generate the input form in the frontend, and are
-  # used to gather input data for the execution of the template.
+  #============================================================================
+  # TEMPLATE PARAMETERS
+  #============================================================================
+
   parameters:
     - title: Fill in some steps
       required:
@@ -34,10 +41,11 @@ spec:
             allowedHosts:
               - github.com
 
-  # These steps are executed in the scaffolder backend, using data that we gathered
-  # via the parameters above.
+  #============================================================================
+  # SCAFFOLDER WORKFLOW
+  #============================================================================
+
   steps:
-    # Each step executes an action, in this case one templates files into the working directory.
     - id: fetch-base
       name: Fetch Base
       action: fetch:template
@@ -46,9 +54,6 @@ spec:
         values:
           name: ${{ parameters.name }}
 
-    # This step publishes the contents of the working directory to GitHub.
-    # If you or your organization prefer another default branch name over 'main'
-    # you can change that here.
     - id: publish
       name: Publish
       action: publish:github
@@ -57,7 +62,6 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: 'main'
 
-    # The final step is to register our new component in the catalog.
     - id: register
       name: Register
       action: catalog:register
@@ -65,7 +69,6 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
-    # Let's notify the user that the template has completed using the Notification action
     - id: notify
       name: Notify
       action: notification:send
@@ -77,7 +80,10 @@ spec:
         info: 'Your template has been executed'
         severity: 'normal'
 
-  # Outputs are displayed to the user after a successful execution of the template.
+        #============================================================================
+        # TEMPLATE OUTPUT
+        #============================================================================
+
   output:
     links:
       - title: Repository

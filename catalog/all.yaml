@@ -1,0 +1,14 @@
+#==============================================================================
+# PLATFORM CATALOG LOCATIONS
+#==============================================================================
+
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: bharathcoudops-platform-catalog
+spec:
+  type: file
+  targets:
+    - ./organization.yaml
+    - ./systems.yaml
+    - ./resources.yaml

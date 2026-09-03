@@ -1,0 +1,16 @@
+#==============================================================================
+# AZURE SANDBOX REQUEST
+#==============================================================================
+
+apiVersion: platform.bharathcoudops.dev/v1alpha1
+kind: SandboxRequest
+metadata:
+  name: ${{ values.name }}
+spec:
+  provider: azure
+  owner: ${{ values.owner }}
+  primaryRegion: ${{ values.primaryRegion }}
+  secondaryRegion: ${{ values.secondaryRegion }}
+  ttlDays: ${{ values.ttlDays }}
+  costCenter: ${{ values.costCenter }}
+  approvalPolicy: repository-review

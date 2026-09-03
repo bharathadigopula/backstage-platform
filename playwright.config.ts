@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+//==============================================================================
+// PLAYWRIGHT END-TO-END TEST CONFIGURATION
+//==============================================================================
+
 import { defineConfig } from '@playwright/test';
 import { generateProjects } from '@backstage/e2e-test-utils/playwright';
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   timeout: 60_000,
 
@@ -27,7 +28,6 @@ export default defineConfig({
     timeout: 30_000,
   },
 
-  // Run your local dev server before starting the tests
   webServer: process.env.CI
     ? []
     : [
@@ -62,5 +62,5 @@ export default defineConfig({
 
   outputDir: 'node_modules/.cache/e2e-test-results',
 
-  projects: generateProjects(), // Find all packages with e2e-test folders
+  projects: generateProjects(),
 });

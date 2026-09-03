@@ -1,13 +1,18 @@
+#==============================================================================
+# BACKSTAGE PLATFORM COMPONENT
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: backstage-platform
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
+  title: BharathCoudOps Developer Portal
+  description: Internal developer portal for BharathCoudOps platform operations.
+  annotations:
+    github.com/project-slug: bharathadigopula/backstage-platform
+    jenkins.io/job-full-name: platform:backstage-platform/validate/main
 spec:
   type: website
-  owner: john@example.com
-  lifecycle: experimental
+  owner: group:default/platform-engineering
+  lifecycle: production
+  system: platform-automation

@@ -1,5 +1,8 @@
 ---
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system
+#==============================================================================
+# EXAMPLE SYSTEM ENTITY
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: System
 metadata:
@@ -7,7 +10,10 @@ metadata:
 spec:
   owner: guests
 ---
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
+#==============================================================================
+# EXAMPLE WEBSITE COMPONENT
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
@@ -19,7 +25,10 @@ spec:
   system: examples
   providesApis: [example-grpc-api]
 ---
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api
+#==============================================================================
+# EXAMPLE GRPC API
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:

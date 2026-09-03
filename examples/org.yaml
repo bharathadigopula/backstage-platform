@@ -1,5 +1,8 @@
 ---
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
+#==============================================================================
+# EXAMPLE USER ENTITY
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
@@ -7,7 +10,10 @@ metadata:
 spec:
   memberOf: [guests]
 ---
-# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+#==============================================================================
+# EXAMPLE GROUP ENTITY
+#==============================================================================
+
 apiVersion: backstage.io/v1alpha1
 kind: Group
 metadata:

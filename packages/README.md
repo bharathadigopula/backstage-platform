@@ -1,9 +1,35 @@
-# The Packages Folder
+# Backstage Packages
 
-This is where your own applications and centrally managed libraries live, each
-in a separate folder of its own.
+This directory contains the deployable BharathCoudOps frontend and backend workspaces.
 
-From the start there's an `app` folder (for the frontend) and a `backend` folder
-(for the Node backend), but you can also add more modules in here that house
-your core additions and adaptations, such as themes, common React component
-libraries, utilities, and similar.
+## Application Package
+
+`app` uses Backstage's new frontend system. It owns the Microsoft or guest sign-in page, sidebar, home widgets, catalog routes, Jenkins integration, and the Cloud Estate, Environments, Sandboxes, Approvals, and Operations views.
+
+```bash
+yarn workspace app start
+yarn workspace app test --watch=false
+yarn workspace app build
+```
+
+## Backend Package
+
+`backend` registers the application, proxy, authentication, catalog, scaffolder, TechDocs, permissions, search, Jenkins, notifications, signals, user settings, Kubernetes, and MCP Actions plugins. Its Dockerfile builds the complete production image from the repository root.
+
+```bash
+yarn workspace backend start
+yarn workspace backend build
+yarn workspace backend build-image
+```
+
+## Validation
+
+Run package checks through the repository-level commands so shared TypeScript, lint, and Backstage configuration are included:
+
+```bash
+yarn prettier:check
+yarn tsc
+yarn lint:all
+yarn test
+yarn build:backend
+```
