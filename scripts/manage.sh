@@ -55,7 +55,7 @@ write_secret() {
 #==============================================================================
 
 verify_stack() {
-  for attempt in $(seq 1 60); do
+  for (( attempt = 1; attempt <= 60; attempt++ )); do
     if curl --fail --silent --show-error "http://${BACKSTAGE_BIND_ADDRESS:-127.0.0.1}:7007/.backstage/health/v1/readiness" >/dev/null 2>&1; then
       compose ps --status running >/dev/null
       printf 'backstage_verify=ready\n'

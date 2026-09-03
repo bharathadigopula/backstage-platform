@@ -25,8 +25,9 @@ engine_version="${DOCKER_ENGINE_VERSION:-5:29.7.2-1~ubuntu.24.04~noble}"
 #==============================================================================
 
 [[ "$action" =~ ^(validate|dry-run|deploy)$ ]] || { printf 'Invalid Docker action.\n' >&2; exit 2; }
-. /etc/os-release
-[[ "$ID" == "ubuntu" && "$VERSION_CODENAME" == "noble" ]] || { printf 'Ubuntu 24.04 is required.\n' >&2; exit 1; }
+distribution_id=$(sed -n 's/^ID=//p' /etc/os-release | tr -d '"')
+distribution_codename=$(sed -n 's/^VERSION_CODENAME=//p' /etc/os-release | tr -d '"')
+[[ "$distribution_id" == "ubuntu" && "$distribution_codename" == "noble" ]] || { printf 'Ubuntu 24.04 is required.\n' >&2; exit 1; }
 if [[ "$action" == "validate" ]]; then printf 'docker_install_validation=ready\n'; exit 0; fi
 if [[ "$action" == "dry-run" ]]; then printf 'docker_install_dry_run=ready\n'; exit 0; fi
 (( EUID == 0 )) || { printf 'Root is required.\n' >&2; exit 1; }

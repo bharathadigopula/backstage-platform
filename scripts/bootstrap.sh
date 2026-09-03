@@ -34,7 +34,10 @@ esac
 [[ "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || { printf 'Invalid repository.\n' >&2; exit 1; }
 [[ "$release" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { printf 'Invalid release.\n' >&2; exit 1; }
 if [[ "$action" =~ ^(deploy|verify|status|backup|restore|rollback)$ ]]; then
-  command -v sudo >/dev/null && sudo -n true || { printf 'Non-interactive sudo is required.\n' >&2; exit 1; }
+  if ! command -v sudo >/dev/null || ! sudo -n true; then
+    printf 'Non-interactive sudo is required.\n' >&2
+    exit 1
+  fi
 fi
 
 #==============================================================================
