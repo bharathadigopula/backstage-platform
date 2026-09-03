@@ -2,7 +2,7 @@
 // BACKSTAGE REPOSITORY VALIDATION
 //==============================================================================
 
-@Library('jenkins-pipeline-templates@v1.4.1') _
+@Library('jenkins-pipeline-templates@v1.4.2') _
 
 repositoryValidationPipeline(
     githubRepository: 'bharathadigopula/backstage-platform',
