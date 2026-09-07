@@ -58,6 +58,10 @@ verify_stack() {
   for (( attempt = 1; attempt <= 60; attempt++ )); do
     if curl --fail --silent --show-error "http://${BACKSTAGE_BIND_ADDRESS:-127.0.0.1}:7007/.backstage/health/v1/readiness" >/dev/null 2>&1; then
       compose ps --status running >/dev/null
+      systemctl is-enabled --quiet backstage-platform-backup.timer
+      systemctl is-active --quiet backstage-platform-backup.timer
+      curl --fail --silent --show-error "http://${BACKSTAGE_BIND_ADDRESS:-127.0.0.1}:9101/metrics" | \
+        grep -Fq 'backstage_backup_last_success_timestamp_seconds'
       printf 'backstage_verify=ready\n'
       return 0
     fi
@@ -106,9 +110,14 @@ EOF
   chmod 0600 "$release_path/.env"
   if [[ -L "$install_root/current" ]]; then ln -sfn "$(readlink -f "$install_root/current")" "$install_root/previous"; fi
   ln -sfn "$release_path" "$install_root/current"
+  install -m 0644 "$release_path/systemd/backstage-platform-backup.service" /etc/systemd/system/backstage-platform-backup.service
+  install -m 0644 "$release_path/systemd/backstage-platform-backup.timer" /etc/systemd/system/backstage-platform-backup.timer
+  systemctl daemon-reload
   printf 'backstage_deploy=ready\n'
   compose build --pull --quiet
   compose up --detach --remove-orphans
+  systemctl start backstage-platform-backup.service
+  systemctl enable --now backstage-platform-backup.timer
   verify_stack
 }
 
