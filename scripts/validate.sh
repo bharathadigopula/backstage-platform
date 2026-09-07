@@ -88,6 +88,13 @@ if ! grep -Fq 'compose build --pull --quiet' "$repository_root/scripts/manage.sh
   exit 1
 fi
 
+deploy_marker_line=$(grep -nF "printf 'backstage_deploy=ready\n'" "$repository_root/scripts/manage.sh" | cut -d: -f1)
+deploy_verify_line=$(grep -nF '  verify_stack' "$repository_root/scripts/manage.sh" | head -1 | cut -d: -f1)
+if [[ -z "$deploy_marker_line" || -z "$deploy_verify_line" ]] || (( deploy_marker_line >= deploy_verify_line )); then
+  printf 'Backstage deploy marker must precede readiness verification for OCI output capture.\n' >&2
+  exit 1
+fi
+
 #==============================================================================
 # VALIDATION RESULT
 #==============================================================================
