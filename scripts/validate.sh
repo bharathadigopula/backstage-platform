@@ -76,8 +76,8 @@ if docker compose version >/dev/null 2>&1; then
   BACKSTAGE_BASE_URL=https://backstage.example.invalid BACKSTAGE_BIND_ADDRESS=127.0.0.1 BACKSTAGE_VERSION=validation JENKINS_BASE_URL=https://jenkins.example.invalid docker compose --project-directory "$temporary_directory" --file "$temporary_directory/compose.yaml" config --quiet
 fi
 
-if grep -Fq '$VERSION_CODENAME' "$repository_root/scripts/install-docker.sh" || \
-  ! grep -Fq '"$distribution_codename"' "$repository_root/scripts/install-docker.sh"; then
+if grep -Fq "\$VERSION_CODENAME" "$repository_root/scripts/install-docker.sh" || \
+  ! grep -Fq "\"\$distribution_codename\"" "$repository_root/scripts/install-docker.sh"; then
   printf 'Docker repository setup must use the validated distribution codename.\n' >&2
   exit 1
 fi
