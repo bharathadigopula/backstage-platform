@@ -71,14 +71,9 @@ verify_stack() {
   return 1
 }
 
-  install -m 0644 "$release_path/systemd/backstage-platform-backup.service" /etc/systemd/system/backstage-platform-backup.service
-  install -m 0644 "$release_path/systemd/backstage-platform-backup.timer" /etc/systemd/system/backstage-platform-backup.timer
-  systemctl daemon-reload
 #==============================================================================
 # STACK DEPLOYMENT
 #==============================================================================
-  systemctl start backstage-platform-backup.service
-  systemctl enable --now backstage-platform-backup.timer
 
 deploy_stack() {
   (( EUID == 0 )) || { printf 'Deploy requires root.\n' >&2; exit 1; }
@@ -115,9 +110,14 @@ EOF
   chmod 0600 "$release_path/.env"
   if [[ -L "$install_root/current" ]]; then ln -sfn "$(readlink -f "$install_root/current")" "$install_root/previous"; fi
   ln -sfn "$release_path" "$install_root/current"
+  install -m 0644 "$release_path/systemd/backstage-platform-backup.service" /etc/systemd/system/backstage-platform-backup.service
+  install -m 0644 "$release_path/systemd/backstage-platform-backup.timer" /etc/systemd/system/backstage-platform-backup.timer
+  systemctl daemon-reload
   printf 'backstage_deploy=ready\n'
   compose build --pull --quiet
   compose up --detach --remove-orphans
+  systemctl start backstage-platform-backup.service
+  systemctl enable --now backstage-platform-backup.timer
   verify_stack
 }
 

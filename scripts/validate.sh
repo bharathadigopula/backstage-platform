@@ -95,10 +95,11 @@ if [[ -z "$deploy_marker_line" || -z "$deploy_build_line" ]] || (( deploy_marker
   exit 1
 fi
 
+deploy_function=$(sed -n '/^deploy_stack() {$/,/^}$/p' "$repository_root/scripts/manage.sh")
 if ! grep -Fq 'OnCalendar=*-*-* 03:30:00' "$repository_root/systemd/backstage-platform-backup.timer" || \
   ! grep -Fq 'Persistent=true' "$repository_root/systemd/backstage-platform-backup.timer" || \
-  ! grep -Fq 'systemctl enable --now backstage-platform-backup.timer' "$repository_root/scripts/manage.sh" || \
-  ! grep -Fq 'systemctl start backstage-platform-backup.service' "$repository_root/scripts/manage.sh" || \
+  ! grep -Fq 'systemctl enable --now backstage-platform-backup.timer' <<< "$deploy_function" || \
+  ! grep -Fq 'systemctl start backstage-platform-backup.service' <<< "$deploy_function" || \
   ! grep -Fq 'backstage_backup_last_success_timestamp_seconds' "$repository_root/scripts/manage.sh"; then
   printf 'Backstage deployment must schedule and seed monitored PostgreSQL backups.\n' >&2
   exit 1
