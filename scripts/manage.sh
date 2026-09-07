@@ -108,8 +108,8 @@ EOF
   ln -sfn "$release_path" "$install_root/current"
   compose build --pull --quiet
   compose up --detach --remove-orphans
-  verify_stack
   printf 'backstage_deploy=ready\n'
+  verify_stack
 }
 
 #==============================================================================
