@@ -15,10 +15,10 @@ set -euo pipefail
 #==============================================================================
 
 action="${1:-validate}"
-containerd_version="${CONTAINERD_VERSION:-2.3.4-1~ubuntu.24.04~noble}"
-buildx_version="${DOCKER_BUILDX_VERSION:-0.36.1-1~ubuntu.24.04~noble}"
-compose_version="${DOCKER_COMPOSE_VERSION:-5.5.0-1~ubuntu.24.04~noble}"
-engine_version="${DOCKER_ENGINE_VERSION:-5:29.7.2-1~ubuntu.24.04~noble}"
+containerd_version="${CONTAINERD_VERSION:-2.3.4-2~ubuntu.24.04~noble}"
+buildx_version="${DOCKER_BUILDX_VERSION:-0.37.0-1~ubuntu.24.04~noble}"
+compose_version="${DOCKER_COMPOSE_VERSION:-5.5.1-1~ubuntu.24.04~noble}"
+engine_version="${DOCKER_ENGINE_VERSION:-5:29.8.0-1~ubuntu.24.04~noble}"
 
 #==============================================================================
 # PLATFORM AND ACTION VALIDATION
@@ -40,7 +40,7 @@ install -d -m 0755 /etc/apt/keyrings
 curl --fail --location --silent --show-error https://download.docker.com/linux/ubuntu/gpg --output /etc/apt/keyrings/docker.asc
 chmod 0644 /etc/apt/keyrings/docker.asc
 architecture=$(dpkg --print-architecture)
-printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu %s stable\n' "$architecture" "$VERSION_CODENAME" > /etc/apt/sources.list.d/docker.list
+printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu %s stable\n' "$architecture" "$distribution_codename" > /etc/apt/sources.list.d/docker.list
 
 #==============================================================================
 # PINNED PACKAGE INSTALLATION
