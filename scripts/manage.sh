@@ -106,7 +106,7 @@ EOF
   chmod 0600 "$release_path/.env"
   if [[ -L "$install_root/current" ]]; then ln -sfn "$(readlink -f "$install_root/current")" "$install_root/previous"; fi
   ln -sfn "$release_path" "$install_root/current"
-  compose build --pull
+  compose build --pull --quiet
   compose up --detach --remove-orphans
   verify_stack
   printf 'backstage_deploy=ready\n'
@@ -175,7 +175,7 @@ case "$action" in
   dry-run) validate_stack; printf 'backstage_dry_run=ready\n' ;;
   deploy) deploy_stack ;;
   verify) verify_stack ;;
-  status) compose ps; verify_stack; printf 'backstage_status=ready\n' ;;
+  status) verify_stack; printf 'backstage_status=ready\n'; compose ps --services --status running ;;
   backup) backup_stack ;;
   restore) restore_stack ;;
   rollback) rollback_stack ;;

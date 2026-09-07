@@ -82,6 +82,12 @@ if grep -Fq "\$VERSION_CODENAME" "$repository_root/scripts/install-docker.sh" ||
   exit 1
 fi
 
+if ! grep -Fq 'compose build --pull --quiet' "$repository_root/scripts/manage.sh" || \
+  ! grep -Fq "status) verify_stack; printf 'backstage_status=ready\\n'; compose ps --services --status running ;;" "$repository_root/scripts/manage.sh"; then
+  printf 'Backstage lifecycle output must retain required markers within the OCI response limit.\n' >&2
+  exit 1
+fi
+
 #==============================================================================
 # VALIDATION RESULT
 #==============================================================================
